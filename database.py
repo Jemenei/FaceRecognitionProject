@@ -1,5 +1,7 @@
 import sqlite3
 import pickle
+from auth_db import init_users
+init_users()
 
 DB_PATH = "faces.db"
 

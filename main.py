@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QInputDi
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer, Qt
 from database import load_all_encodings, save_face_encoding
+from auth_window import AuthWindow
+
 
 # ====== DLIB МОДЕЛИ ======
 detector = dlib.get_frontal_face_detector()
@@ -33,6 +35,12 @@ class FaceRecognitionApp(QWidget):
         self.add_face_btn.clicked.connect(self.capture_new_face)
         layout.addWidget(self.add_face_btn)
         self.setLayout(layout)
+
+        # Кнопка Login / Register
+        self.auth_btn = QPushButton("Login / Register")
+        self.auth_btn.clicked.connect(self.open_auth)
+        layout.addWidget(self.auth_btn)
+
 
         # Камера
         self.cap = cv2.VideoCapture(0)
@@ -137,9 +145,17 @@ class FaceRecognitionApp(QWidget):
         # Обновляем список лиц
         self.known_faces = load_all_encodings()
 
+    def open_auth(self):
+        self.auth_window = AuthWindow()
+        self.auth_window.show()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = FaceRecognitionApp()
     win.show()
     sys.exit(app.exec_())
+    auth_btn = QPushButton("Login / Register")
+    auth_btn.clicked.connect(self.open_auth)
+    layout.addWidget(auth_btn)
+
