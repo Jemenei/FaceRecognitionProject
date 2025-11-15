@@ -7,9 +7,30 @@ __pycache__/
 # Virtual environments
 venv/
 .venv/
+env/
 
-# Databases
+# Databases - НЕ КОММИТИМ БАЗЫ ДАННЫХ!
 *.db
+users.db
+admin.db
+users_registry.db
+access_logs.db
+faces.db
 
 # OS files
 .DS_Store
+Thumbs.db
+
+# SSH keys and secrets - ОЧЕНЬ ВАЖНО!
+*.pem
+*_rsa
+*_rsa.pub
+FaceRecognitionProject
+*.key
+*.secret
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
