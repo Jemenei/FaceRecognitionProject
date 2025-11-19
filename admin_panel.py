@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QPushButton, QTableWidget, QTableWidgetItem, 
                              QMessageBox, QHeaderView, QTabWidget)
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QColor
 from database import get_all_users, delete_user, get_recent_logs
 
 
@@ -20,24 +20,40 @@ class AdminPanel(QWidget):
     
     def init_ui(self):
         """Инициализация интерфейса"""
-        self.setWindowTitle("📊 Панель администратора")
+        self.setStyleSheet("background-color: #f5f7fa;")
         
         layout = QVBoxLayout()
-        
-        # Заголовок
-        header = QLabel("📊 ПАНЕЛЬ УПРАВЛЕНИЯ БАЗАМИ ДАННЫХ")
-        header.setAlignment(Qt.AlignCenter)
-        header_font = QFont()
-        header_font.setPointSize(16)
-        header_font.setBold(True)
-        header.setFont(header_font)
-        header.setStyleSheet("padding: 15px; background-color: #2196F3; color: white;")
-        layout.addWidget(header)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         
         # Создаем вкладки
         tabs = QTabWidget()
-        tabs.addTab(self.create_users_tab(), "📋 FULL DATABASE")
-        tabs.addTab(self.create_logs_tab(), "🕐 LOGIN/LOGOUT DATABASE")
+        tabs.setStyleSheet("""
+            QTabWidget::pane {
+                border: 1px solid #e0e0e0;
+                background-color: white;
+                border-radius: 8px;
+            }
+            QTabBar::tab {
+                background-color: #f8f9fa;
+                color: #666666;
+                padding: 12px 24px;
+                margin-right: 4px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                font-weight: 500;
+            }
+            QTabBar::tab:selected {
+                background-color: white;
+                color: #4A90E2;
+                border-bottom: 2px solid #4A90E2;
+            }
+            QTabBar::tab:hover {
+                background-color: #e9ecef;
+            }
+        """)
+        tabs.addTab(self.create_users_tab(), "📋 База пользователей")
+        tabs.addTab(self.create_logs_tab(), "🕐 Журнал доступа")
         
         layout.addWidget(tabs)
         self.setLayout(layout)
@@ -49,29 +65,56 @@ class AdminPanel(QWidget):
     def create_users_tab(self):
         """Создание вкладки с полной базой пользователей"""
         tab = QWidget()
+        tab.setStyleSheet("background-color: white;")
         layout = QVBoxLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         
-        # Информация
-        info_label = QLabel("📋 Все зарегистрированные студенты и сотрудники")
-        info_label.setStyleSheet("font-size: 14px; font-weight: bold; padding: 10px; background-color: #e3f2fd;")
-        layout.addWidget(info_label)
+        # Информация и кнопки
+        top_layout = QHBoxLayout()
         
-        # Кнопки управления
-        buttons_layout = QHBoxLayout()
+        info_label = QLabel("Все зарегистрированные пользователи")
+        info_label.setStyleSheet("font-size: 15px; font-weight: 500; color: #1a1a1a;")
+        top_layout.addWidget(info_label)
+        
+        top_layout.addStretch()
         
         refresh_btn = QPushButton("🔄 Обновить")
-        refresh_btn.setStyleSheet("background-color: #2196F3; color: white; padding: 8px; font-weight: bold;")
+        refresh_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4A90E2;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                font-weight: 500;
+            }
+            QPushButton:hover {
+                background-color: #357ABD;
+            }
+        """)
         refresh_btn.clicked.connect(self.load_users)
         
-        delete_btn = QPushButton("🗑️ Удалить выбранного")
-        delete_btn.setStyleSheet("background-color: #f44336; color: white; padding: 8px; font-weight: bold;")
+        delete_btn = QPushButton("🗑 Удалить")
+        delete_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #dc3545;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                font-weight: 500;
+            }
+            QPushButton:hover {
+                background-color: #c82333;
+            }
+        """)
         delete_btn.clicked.connect(self.delete_user)
         
-        buttons_layout.addWidget(refresh_btn)
-        buttons_layout.addWidget(delete_btn)
-        buttons_layout.addStretch()
+        top_layout.addWidget(refresh_btn)
+        top_layout.addWidget(delete_btn)
         
-        layout.addLayout(buttons_layout)
+        layout.addLayout(top_layout)
         
         # Таблица пользователей
         self.users_table = QTableWidget()
@@ -84,13 +127,27 @@ class AdminPanel(QWidget):
         self.users_table.setAlternatingRowColors(True)
         self.users_table.setStyleSheet("""
             QTableWidget {
-                font-size: 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                background-color: white;
+                gridline-color: #f0f0f0;
+                font-size: 13px;
             }
             QHeaderView::section {
-                background-color: #2196F3;
-                color: white;
-                font-weight: bold;
+                background-color: #f8f9fa;
+                color: #495057;
+                font-weight: 600;
+                padding: 10px;
+                border: none;
+                border-bottom: 2px solid #e0e0e0;
+            }
+            QTableWidget::item {
                 padding: 8px;
+                color: #212529;
+            }
+            QTableWidget::item:selected {
+                background-color: #e7f3ff;
+                color: #1a1a1a;
             }
         """)
         
@@ -101,22 +158,38 @@ class AdminPanel(QWidget):
     def create_logs_tab(self):
         """Создание вкладки с логами входов/выходов"""
         tab = QWidget()
+        tab.setStyleSheet("background-color: white;")
         layout = QVBoxLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         
         # Информационная панель
-        info_layout = QHBoxLayout()
-        info_label = QLabel("🔴 Live мониторинг | Автообновление каждые 5 секунд")
-        info_label.setStyleSheet("color: #f44336; font-weight: bold; font-size: 14px; padding: 10px;")
+        top_layout = QHBoxLayout()
         
-        refresh_btn = QPushButton("🔄 Обновить сейчас")
-        refresh_btn.setStyleSheet("background-color: #2196F3; color: white; padding: 8px; font-weight: bold;")
+        info_label = QLabel("🔴 Live мониторинг • Обновление каждые 5 сек")
+        info_label.setStyleSheet("color: #dc3545; font-weight: 500; font-size: 13px;")
+        top_layout.addWidget(info_label)
+        
+        top_layout.addStretch()
+        
+        refresh_btn = QPushButton("🔄 Обновить")
+        refresh_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4A90E2;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                font-weight: 500;
+            }
+            QPushButton:hover {
+                background-color: #357ABD;
+            }
+        """)
         refresh_btn.clicked.connect(self.load_logs)
+        top_layout.addWidget(refresh_btn)
         
-        info_layout.addWidget(info_label)
-        info_layout.addStretch()
-        info_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(info_layout)
+        layout.addLayout(top_layout)
         
         # Таблица логов
         self.logs_table = QTableWidget()
@@ -128,13 +201,27 @@ class AdminPanel(QWidget):
         self.logs_table.setAlternatingRowColors(True)
         self.logs_table.setStyleSheet("""
             QTableWidget {
-                font-size: 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                background-color: white;
+                gridline-color: #f0f0f0;
+                font-size: 13px;
             }
             QHeaderView::section {
-                background-color: #2196F3;
-                color: white;
-                font-weight: bold;
+                background-color: #f8f9fa;
+                color: #495057;
+                font-weight: 600;
+                padding: 10px;
+                border: none;
+                border-bottom: 2px solid #e0e0e0;
+            }
+            QTableWidget::item {
                 padding: 8px;
+                color: #212529;
+            }
+            QTableWidget::item:selected {
+                background-color: #e7f3ff;
+                color: #1a1a1a;
             }
         """)
         
@@ -150,7 +237,7 @@ class AdminPanel(QWidget):
         for row, user in enumerate(users):
             for col, value in enumerate(user):
                 item = QTableWidgetItem(str(value))
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # Только чтение
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.users_table.setItem(row, col, item)
     
     def load_logs(self):
@@ -166,9 +253,11 @@ class AdminPanel(QWidget):
                 # Цветовая маркировка действий
                 if col == 3:  # Колонка "Действие"
                     if value == "Вход":
-                        item.setBackground(Qt.green)
+                        item.setBackground(QColor(212, 237, 218))  # Светло-зеленый
+                        item.setForeground(QColor(21, 87, 36))
                     elif value == "Выход":
-                        item.setBackground(Qt.yellow)
+                        item.setBackground(QColor(255, 243, 205))  # Светло-желтый
+                        item.setForeground(QColor(133, 100, 4))
                 
                 self.logs_table.setItem(row, col, item)
     
@@ -180,7 +269,7 @@ class AdminPanel(QWidget):
         """Удаление выбранного пользователя"""
         selected = self.users_table.currentRow()
         if selected < 0:
-            QMessageBox.warning(self, "Ошибка", "Выберите пользователя для удаления!")
+            QMessageBox.warning(self, "Ошибка", "Выберите пользователя для удаления")
             return
         
         user_id = int(self.users_table.item(selected, 0).text())
@@ -192,7 +281,7 @@ class AdminPanel(QWidget):
         
         if reply == QMessageBox.Yes:
             delete_user(user_id)
-            QMessageBox.information(self, "Успех", "Пользователь удален!")
+            QMessageBox.information(self, "Успех", "Пользователь удален")
             self.load_users()
     
     def closeEvent(self, event):

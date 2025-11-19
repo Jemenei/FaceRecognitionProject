@@ -19,78 +19,99 @@ class LoginWindow(QDialog):
         self.init_ui()
     
     def init_ui(self):
-        self.setWindowTitle("Авторизация в системе")
-        self.setFixedSize(450, 300)
+        self.setWindowTitle("Авторизация")
+        self.setFixedSize(400, 400)
         self.setStyleSheet("""
             QDialog {
-                background-color: #f5f5f5;
+                background-color: #ffffff;
             }
             QLabel {
-                font-size: 14px;
+                color: #333333;
             }
             QLineEdit {
-                padding: 10px;
-                border: 2px solid #ddd;
-                border-radius: 5px;
-                font-size: 14px;
-                background-color: white;
+                padding: 14px 15px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 1px;
+                background-color: #f8f9fa;
+                color: #1a1a1a;
+                min-height: 45px;
             }
             QLineEdit:focus {
-                border: 2px solid #2196F3;
+                border: 1px solid #4A90E2;
+                background-color: #ffffff;
             }
             QPushButton {
                 padding: 12px;
-                background-color: #4CAF50;
+                background-color: #4A90E2;
                 color: white;
                 border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
+                border-radius: 8px;
+                font-size: 15px;
+                font-weight: 500;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: #357ABD;
+            }
+            QPushButton:pressed {
+                background-color: #2868A8;
             }
         """)
         
         layout = QVBoxLayout()
+        layout.setSpacing(15)
+        layout.setContentsMargins(40, 40, 40, 40)
         
         # Заголовок
-        title = QLabel("🔐 СИСТЕМА КОНТРОЛЯ ДОСТУПА")
+        title = QLabel("🔐 Вход в систему")
         title.setAlignment(Qt.AlignCenter)
         title_font = QFont()
-        title_font.setPointSize(18)
-        title_font.setBold(True)
+        title_font.setPointSize(22)
         title.setFont(title_font)
-        title.setStyleSheet("color: #2196F3; padding: 20px;")
+        title.setStyleSheet("color: #1a1a1a; margin-bottom: 10px;")
         layout.addWidget(title)
         
-        subtitle = QLabel("Авторизация администратора")
+        subtitle = QLabel("Система контроля доступа")
         subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet("color: #666; font-size: 12px; margin-bottom: 20px;")
+        subtitle.setStyleSheet("color: #666666; font-size: 13px; margin-bottom: 20px;")
         layout.addWidget(subtitle)
         
-        # Поля ввода
+        # Логин
+        login_label = QLabel("Логин")
+        login_label.setStyleSheet("color: #666; font-size: 13px; margin-bottom: -8px;")
+        layout.addWidget(login_label)
+
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Введите логин")
-        layout.addWidget(QLabel("Логин:"))
         layout.addWidget(self.username_input)
-        
+
+        # Пароль
+        password_label = QLabel("Пароль")
+        password_label.setStyleSheet("color: #666; font-size: 13px; margin-bottom: -8px; margin-top: 5px;")
+        layout.addWidget(password_label)
+
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Введите пароль")
         self.password_input.setEchoMode(QLineEdit.Password)
-        layout.addWidget(QLabel("Пароль:"))
         layout.addWidget(self.password_input)
         
         # Кнопка входа
-        login_btn = QPushButton("🚀 ВОЙТИ В СИСТЕМУ")
+        login_btn = QPushButton("Войти")
+        login_btn.setMinimumHeight(50)
         login_btn.clicked.connect(self.login)
-        layout.addWidget(login_btn)
+        layout.addWidget(login_btn, 0, Qt.AlignTop)
         
+        layout.addSpacing(10)
+
+
         # Подсказка
         hint = QLabel("По умолчанию: admin / admin123")
-        hint.setStyleSheet("color: #999; font-size: 11px; font-style: italic; margin-top: 10px;")
+        hint.setStyleSheet("color: #999; font-size: 11px; font-style: italic;")
         hint.setAlignment(Qt.AlignCenter)
         layout.addWidget(hint)
+        
+
+        layout.addStretch()
         
         self.setLayout(layout)
         
@@ -107,8 +128,8 @@ class LoginWindow(QDialog):
             self.admin_name = admin_name
             self.accept()
         else:
-            QMessageBox.warning(self, "❌ Ошибка доступа", 
-                              "Неверный логин или пароль!\n\nПопробуйте снова.")
+            QMessageBox.warning(self, "Ошибка", 
+                              "Неверный логин или пароль")
             self.password_input.clear()
             self.username_input.setFocus()
 
@@ -122,43 +143,37 @@ class MainWindow(QMainWindow):
         self.init_ui()
     
     def init_ui(self):
-        self.setWindowTitle("🎓 Система контроля доступа университета")
-        self.setGeometry(100, 100, 1000, 700)
+        self.setWindowTitle("Система контроля доступа")
+        self.setGeometry(100, 100, 1100, 750)
+        self.setStyleSheet("background-color: #f5f7fa;")
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout()
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         
         # Заголовок с именем админа
+        header_widget = QWidget()
+        header_widget.setStyleSheet("background-color: #ffffff; border-bottom: 1px solid #e0e0e0;")
         header_layout = QHBoxLayout()
+        header_layout.setContentsMargins(30, 20, 30, 20)
         
-        header = QLabel("🎓 ПАНЕЛЬ УПРАВЛЕНИЯ")
-        header.setAlignment(Qt.AlignCenter)
+        header = QLabel("Панель управления")
         header_font = QFont()
         header_font.setPointSize(20)
-        header_font.setBold(True)
         header.setFont(header_font)
-        header.setStyleSheet("padding: 20px; background-color: #2196F3; color: white;")
+        header.setStyleSheet("color: #1a1a1a;")
         
         admin_label = QLabel(f"👤 {self.admin_name}")
-        admin_label.setAlignment(Qt.AlignRight)
-        admin_label_font = QFont()
-        admin_label_font.setPointSize(12)
-        admin_label.setFont(admin_label_font)
-        admin_label.setStyleSheet("padding: 20px; background-color: #2196F3; color: white;")
+        admin_label.setStyleSheet("color: #666666; font-size: 14px;")
         
-        header_layout.addWidget(header, 3)
-        header_layout.addWidget(admin_label, 1)
+        header_layout.addWidget(header)
+        header_layout.addStretch()
+        header_layout.addWidget(admin_label)
         
-        header_widget = QWidget()
         header_widget.setLayout(header_layout)
         main_layout.addWidget(header_widget)
-        
-        # Описание
-        description = QLabel("Выберите режим работы системы:")
-        description.setAlignment(Qt.AlignCenter)
-        description.setStyleSheet("font-size: 14px; padding: 15px; background-color: #e3f2fd;")
-        main_layout.addWidget(description)
         
         # Стек виджетов для разных режимов
         self.stacked_widget = QStackedWidget()
@@ -179,62 +194,81 @@ class MainWindow(QMainWindow):
     def create_menu_widget(self):
         """Создание виджета с меню выбора режимов"""
         widget = QWidget()
+        widget.setStyleSheet("background-color: #f5f7fa;")
         layout = QVBoxLayout()
+        layout.setContentsMargins(50, 40, 50, 40)
+        layout.setSpacing(20)
         
-        layout.addStretch()
+        # Описание
+        description = QLabel("Выберите режим работы")
+        description.setAlignment(Qt.AlignCenter)
+        description.setStyleSheet("color: #666666; font-size: 15px; margin-bottom: 20px;")
+        layout.addWidget(description)
         
         # Кнопка FULL DATABASE
-        db_btn = QPushButton("📋 FULL DATABASE\n\nПросмотр всех зарегистрированных\nстудентов и сотрудников")
-        db_btn.setMinimumHeight(120)
+        db_btn = QPushButton("📋  База данных пользователей\nПросмотр всех студентов и сотрудников")
+        db_btn.setMinimumHeight(100)
         db_btn.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                padding: 20px;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 10px;
+                background-color: #ffffff;
+                color: #1a1a1a;
+                padding: 25px;
+                font-size: 15px;
+                font-weight: 500;
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                text-align: left;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: #4A90E2;
+                color: white;
+                border: 1px solid #4A90E2;
             }
         """)
         db_btn.clicked.connect(lambda: self.switch_mode(1))
         layout.addWidget(db_btn)
         
         # Кнопка LOGIN/LOGOUT DATABASE
-        logs_btn = QPushButton("🕐 LOGIN/LOGOUT DATABASE\n\nЖурнал входов и выходов\n(Live мониторинг)")
-        logs_btn.setMinimumHeight(120)
+        logs_btn = QPushButton("🕐  Журнал доступа\nИстория входов и выходов (Live)")
+        logs_btn.setMinimumHeight(100)
         logs_btn.setStyleSheet("""
             QPushButton {
-                background-color: #2196F3;
-                color: white;
-                padding: 20px;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 10px;
+                background-color: #ffffff;
+                color: #1a1a1a;
+                padding: 25px;
+                font-size: 15px;
+                font-weight: 500;
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                text-align: left;
             }
             QPushButton:hover {
-                background-color: #0b7dda;
+                background-color: #4A90E2;
+                color: white;
+                border: 1px solid #4A90E2;
             }
         """)
         logs_btn.clicked.connect(lambda: self.switch_mode(1))
         layout.addWidget(logs_btn)
         
         # Кнопка FACE RECOGNITION
-        face_btn = QPushButton("🎥 FACE RECOGNITION\n\nАктивировать систему\nраспознавания лиц")
-        face_btn.setMinimumHeight(120)
+        face_btn = QPushButton("🎥  Распознавание лиц\nАктивировать систему сканирования")
+        face_btn.setMinimumHeight(100)
         face_btn.setStyleSheet("""
             QPushButton {
-                background-color: #FF9800;
-                color: white;
-                padding: 20px;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 10px;
+                background-color: #ffffff;
+                color: #1a1a1a;
+                padding: 25px;
+                font-size: 15px;
+                font-weight: 500;
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                text-align: left;
             }
             QPushButton:hover {
-                background-color: #e68900;
+                background-color: #4A90E2;
+                color: white;
+                border: 1px solid #4A90E2;
             }
         """)
         face_btn.clicked.connect(lambda: self.switch_mode(2))
@@ -243,23 +277,24 @@ class MainWindow(QMainWindow):
         layout.addStretch()
         
         # Кнопка назад (скрыта на главном экране)
-        self.back_btn = QPushButton("◀ Назад в меню")
+        self.back_btn = QPushButton("← Назад")
         self.back_btn.setStyleSheet("""
             QPushButton {
-                background-color: #757575;
-                color: white;
-                padding: 10px;
-                font-size: 14px;
-                font-weight: bold;
-                border-radius: 5px;
+                background-color: #e9ecef;
+                color: #495057;
+                padding: 10px 20px;
+                font-size: 13px;
+                font-weight: 500;
+                border: none;
+                border-radius: 8px;
             }
             QPushButton:hover {
-                background-color: #616161;
+                background-color: #dee2e6;
             }
         """)
         self.back_btn.clicked.connect(lambda: self.switch_mode(0))
         self.back_btn.hide()
-        layout.addWidget(self.back_btn)
+        layout.addWidget(self.back_btn, 0, Qt.AlignLeft)
         
         widget.setLayout(layout)
         return widget
@@ -273,7 +308,6 @@ class MainWindow(QMainWindow):
             self.back_btn.hide()
         else:
             self.back_btn.show()
-            self.back_btn.raise_()
         
         # Управление камерой для режима распознавания
         if index == 2:
